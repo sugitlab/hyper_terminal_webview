@@ -71,7 +71,6 @@ export default class Terms extends React.Component<TermsProps> {
   }
 
   render() {
-    console.log('Term props:', this.props);
     const shift = !isMac && this.props.termGroups.length > 1;
     return (
       <div className={`terms_terms ${shift ? 'terms_termsShifted' : 'terms_termsNotShifted'}`}>
