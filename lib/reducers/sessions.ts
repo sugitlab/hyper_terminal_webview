@@ -1,5 +1,5 @@
 import Immutable from 'seamless-immutable';
-import {decorateSessionsReducer} from '../utils/plugins';
+import { decorateSessionsReducer } from '../utils/plugins';
 import {
   SESSION_ADD,
   SESSION_PTY_EXIT,
@@ -11,9 +11,10 @@ import {
   SESSION_SET_XTERM_TITLE,
   SESSION_SET_CWD,
   SESSION_SEARCH,
-  SESSION_SEARCH_CLOSE
+  SESSION_SEARCH_CLOSE,
+  SESSION_URL_SET
 } from '../constants/sessions';
-import {sessionState, session, Mutable, ISessionReducer} from '../hyper';
+import { sessionState, session, Mutable, ISessionReducer } from '../hyper';
 
 const initialState: sessionState = Immutable<Mutable<sessionState>>({
   sessions: {},
@@ -75,7 +76,7 @@ const reducer: ISessionReducer = (state = initialState, action) => {
             }
           }
         },
-        {deep: true}
+        { deep: true }
       );
 
     case SESSION_PTY_DATA:
@@ -90,7 +91,7 @@ const reducer: ISessionReducer = (state = initialState, action) => {
               }
             }
           },
-          {deep: true}
+          { deep: true }
         );
       }
       return state;
@@ -128,6 +129,9 @@ const reducer: ISessionReducer = (state = initialState, action) => {
         return state.setIn(['sessions', state.activeUid, 'cwd'], action.cwd);
       }
       return state;
+
+    case SESSION_URL_SET:
+      return state.setIn(['sessions', action.uid, 'url'], action.url);
 
     default:
       return state;

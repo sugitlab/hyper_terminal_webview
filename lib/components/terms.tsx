@@ -1,11 +1,11 @@
 import React from 'react';
-import {decorate, getTermGroupProps} from '../utils/plugins';
-import {registerCommandHandlers} from '../command-registry';
+import { decorate, getTermGroupProps } from '../utils/plugins';
+import { registerCommandHandlers } from '../command-registry';
 import TermGroup_ from './term-group';
 import StyleSheet_ from './style-sheet';
-import {TermsProps, HyperDispatch} from '../hyper';
+import { TermsProps, HyperDispatch } from '../hyper';
 import Term from './term';
-import {ObjectTypedKeys} from '../utils/object';
+import { ObjectTypedKeys } from '../utils/object';
 
 const TermGroup = decorate(TermGroup_, 'TermGroup');
 const StyleSheet = decorate(StyleSheet_, 'StyleSheet');
@@ -22,7 +22,7 @@ export default class Terms extends React.Component<TermsProps> {
     props.ref_(this);
   }
 
-  shouldComponentUpdate(nextProps: TermsProps & {children: any}) {
+  shouldComponentUpdate(nextProps: TermsProps & { children: any }) {
     return (
       ObjectTypedKeys(nextProps).some((i) => i !== 'write' && this.props[i] !== nextProps[i]) ||
       ObjectTypedKeys(this.props).some((i) => i !== 'write' && this.props[i] !== nextProps[i])
@@ -51,7 +51,7 @@ export default class Terms extends React.Component<TermsProps> {
     window.addEventListener('contextmenu', () => {
       const selection = window.getSelection()!.toString();
       const {
-        props: {uid}
+        props: { uid }
       } = this.getActiveTerm();
       this.props.onContextMenu(uid, selection);
     });
@@ -71,12 +71,13 @@ export default class Terms extends React.Component<TermsProps> {
   }
 
   render() {
+    console.log('Term props:', this.props)
     const shift = !isMac && this.props.termGroups.length > 1;
     return (
       <div className={`terms_terms ${shift ? 'terms_termsShifted' : 'terms_termsNotShifted'}`}>
         {this.props.customChildrenBefore}
         {this.props.termGroups.map((termGroup) => {
-          const {uid} = termGroup;
+          const { uid } = termGroup;
           const isActive = uid === this.props.activeRootGroup;
           const props = getTermGroupProps(uid, this.props, {
             termGroup,
