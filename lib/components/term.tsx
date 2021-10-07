@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-unsafe-call: 0 */
 import React from 'react';
 import {Terminal, ITerminalOptions, IDisposable} from 'xterm';
 import {FitAddon} from 'xterm-addon-fit';
@@ -161,7 +162,6 @@ export default class Term extends React.PureComponent<TermProps> {
         new WebLinksAddon(
           (event: MouseEvent | undefined, uri: string) => {
             // if (shallActivateWebLink(event)) void shell.openExternal(uri);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             store.dispatch({
               type: 'SESSION_URL_SET',
               uid: props.uid,
@@ -441,7 +441,6 @@ export default class Term extends React.PureComponent<TermProps> {
             ref={(webView: any) => {
               if (webView) {
                 setTimeout(() => {
-                  /* eslint @typescript-eslint/no-unsafe-call: 0 */
                   const wc = remote.webContents.fromId(webView.getWebContentsId());
                   wc.on('before-input-event', (_event, input) => {
                     if (input.key === 'r' && input.meta) {
