@@ -6,7 +6,7 @@ import {SearchAddon} from 'xterm-addon-search';
 import {WebglAddon} from 'xterm-addon-webgl';
 import {LigaturesAddon} from 'xterm-addon-ligatures';
 import {Unicode11Addon} from 'xterm-addon-unicode11';
-import {clipboard /*, shell */} from 'electron';
+import {clipboard, remote /*, shell */} from 'electron';
 import Color from 'color';
 import terms from '../terms';
 import processClipboard from '../utils/paste';
@@ -438,6 +438,19 @@ export default class Term extends React.PureComponent<TermProps> {
       >
         {this.props.url ? (
           <webview
+            ref={(webView: any) => {
+              if (webView) {
+                setTimeout(() => {
+                  /* eslint @typescript-eslint/no-unsafe-call: 0 */
+                  const wc = remote.webContents.fromId(webView.getWebContentsId());
+                  wc.on('before-input-event', (_event, input) => {
+                    if (input.key === 'r' && input.meta) {
+                      webView.reload();
+                    }
+                  });
+                }, 10);
+              }
+            }}
             src={this.props.url}
             style={{
               background: '#fff',
