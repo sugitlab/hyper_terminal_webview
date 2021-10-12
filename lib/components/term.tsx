@@ -29,7 +29,10 @@ const isWebgl2Supported = (() => {
   return () => {
     if (isSupported === undefined) {
       const canvas = document.createElement('canvas');
-      const gl = canvas.getContext('webgl2', {depth: false, antialias: false});
+      const gl = canvas.getContext('webgl2', {
+        depth: false,
+        antialias: false
+      });
       isSupported = gl instanceof window.WebGL2RenderingContext;
     }
     return isSupported;
@@ -94,6 +97,7 @@ export default class Term extends React.PureComponent<TermProps> {
   term!: Terminal;
   resizeObserver!: ResizeObserver;
   resizeTimeout!: NodeJS.Timeout;
+  webViewRef: any | null;
   constructor(props: TermProps) {
     super(props);
     props.ref_(props.uid, this);
@@ -429,6 +433,29 @@ export default class Term extends React.PureComponent<TermProps> {
     });
   }
 
+  setWebViewRef = (webView: any) => {
+    const oldRef = this.webViewRef;
+    this.webViewRef = webView;
+
+    if (!oldRef && webView) {
+      setTimeout(() => {
+        const wc = remote.webContents.fromId(webView.getWebContentsId());
+        wc.setIgnoreMenuShortcuts(true);
+        wc.on('before-input-event', (_event, input) => {
+          if (input.type === 'keyDown') {
+            if (input.key === 'r' && input.meta) {
+              webView.reload();
+            } else if (input.key === '=' && input.meta) {
+              wc.setZoomLevel(wc.getZoomLevel() + 1);
+            } else if (input.key === '-' && input.meta) {
+              wc.setZoomLevel(wc.getZoomLevel() - 1);
+            }
+          }
+        });
+      }, 10);
+    }
+  };
+
   render() {
     return (
       <div
@@ -438,18 +465,7 @@ export default class Term extends React.PureComponent<TermProps> {
       >
         {this.props.url ? (
           <webview
-            ref={(webView: any) => {
-              if (webView) {
-                setTimeout(() => {
-                  const wc = remote.webContents.fromId(webView.getWebContentsId());
-                  wc.on('before-input-event', (_event, input) => {
-                    if (input.key === 'r' && input.meta) {
-                      webView.reload();
-                    }
-                  });
-                }, 10);
-              }
-            }}
+            ref={this.setWebViewRef}
             src={this.props.url}
             style={{
               background: '#fff',
